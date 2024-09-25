@@ -1,0 +1,453 @@
+---
+title: "Path Coefficient Analysis"
+author: "Ali Arminian"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+fig_caption: yes
+link-citations: true
+toc: true
+bibliography: rpathref.bib
+vignette: >
+  %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{Path coefficient analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  out.width = '70%'
+)
+```
+
+
+# 1-Introduction
+**Path coefficient** analysis which introduced by Sewall Wright in 1921 as "correlation and causation" is the extended form of multiple regression analysis, which decomposes correlation coefficients into direct, indirect, spurious and unanalyzed effects. It is a vital tool to study the cause-effect relationships of normal variables. It is of 3 types: simple, sequential and multivariate, in the simple form, there is a single dependent (endogenous) and one or more independent variables (exogenous). Certainly Sewall Wright, is the pioneer of path coefficient analysis who has numerous publications in this case from 1916 to 1980 ys. This method was initially considered with skepticism and later accepted and widely used in social sciences. Today, path coefficient analysis is used in almost all fields of life. For more info on path coefficient analysis see [@bondari1990; @wright1923; @wright1934; @wright1960; @Li1975; @wolfle2003]. 
+ It is suggested to refer to the statistical references, for example [@Snedcochr1980; @BathJhon1997; @DrapSmi1981; @NeterWW1992] in order to become more familiar with topics in statistics, such as descriptive statistics.
+ 
+
+# 
+# 2- The Path coefficient model
+In a path coefficient analysis, descriptive statistics and Pearson correlation coefficients (double-headed arrows) between variables may be estimates which is done in this package. Moreover, and especially simple or multiple linear regression of dependent (or endogenous) variable(s) on independent variable(s) may be done, a task is done here. Of course, in a sequential path coefficient analysis, intervening or endogenous variables exist and analyses are performed step-by-step via this package, but in a simple path coefficient analysis one step is enough, which is done in this package along with the path diagram which is drawn automatically, but for complicated or sequential path, some more works must be done which is discussed later in this manual. In a path model, path coefficient or direct effects (Pi's) indicates the direct effect of a variable on another, and are standardized partial regression coefficients (in Wright's terminology) due they are estimated from correlations or from the transformed (standardized) data as: 
+$P_i = \beta_i\frac{\sigma_{X_i}}{\sigma_Y}$. The path equations are as follows: 
+
+### One dependent variable:
+
+$$\mathbf{X} = 
+ \begin{pmatrix} 
+ P_1 + P_2r_{12} + P_3r_{13} + ... + P_nr_{1n} = r_{Y1} \\
+ P_1r_{21} + P_2 + P_3r_{23} + ... + P_nr_{2n} = r_{Y2} \\
+ P_1r_{31} + P_2r_{32} + P_3 + ... + P_nr_{3n} = r_{Y3}\\
+  \vdots  + \vdots \\ 
+  P_1r_{n1} + P_2r_{n2} + P_3r_{n3} + ... + P_n = r_{Yn} \\
+ \end{pmatrix}$$ 
+
+### Extension to more dependent variables:
+  Our package is capable of performing this straightforward task through detailed explanations. As stated by Bondari (1990), for two dependent variables $Y_1$ and $Y_2$: 
+
+   $$Y_1=p_1X_1+p_2X_2+p_3X_3+... +p_nX_n\\
+  Y_2=p'_1X_1+p'_2X_2+p'_3X_3+... +p'_nX_n\\
+  ...\\
+ where:\\
+  r_{Y_1Y_2}=p_1p'_1+p_2p'_2+p_3p'_3+...+p_np'_n+\sigma_{i=j}p_ip'_1r_{ij}=\sigma_{i,j}p_ip'_ir_{ij}$$
+  
+The commands above are shown in the Figures 1&2. The simple path diagram:
+
+![Fig. 1: A simple path diagram (courtesy of Sewall Wright)](https://github.com/abeyran/Path.Analysis/blob/main/Fig1.jpg?raw=true)
+
+
+![Fig. 2: A multivariate path diagram(courtesy of Bondari, 1990) ](https://github.com/abeyran/Path.Analysis/blob/main/Fig1.jpg?raw=true)
+
+The opening part of this vignette (instruction manual) provides a brief introduction to the concepts underpinning path coefficient analysis. The subsequent part showcases two practical demonstrations. In a path coefficient analysis, the Pearson correlation coefficients between dependent variables and their related independent variables are decomposed, as previously mentioned.
+
+Our ** package can be applied in two cases: *simple* and *sequential* path coefficient analysis. If not installed, the ** package is being installed firstly through: 
+
+```{r install Path.Analysis package}
+if(!require('Path.Analysis')){
+    install.packages('Path.Analysis')
+}
+library('Path.Analysis')
+```
+
+The analyses requires the following R packages:
+```{r setup,warning=FALSE,message=FALSE}
+library(car)
+library(stats)
+library(Hmisc)
+library(pastecs)
+library(devtools)
+library(usethis)
+library(testthat)
+library(knitr)
+library(rmarkdown)
+    
+## For graphical displays
+library(metan)
+library(ComplexHeatmap)
+library(grDevices)
+library(DiagrammeR)
+```
+
+
+## 2-1- Simple path coefficient analysis
+### 2-1-1- worked example 1:
+
+*When data is put within the `data` folder of $\mathbf{}$ package*. This is the simplest dataset in this package consisting of a dependent variable called *Y* and 3 independent called *X1*, *X2* and *X3*. Then in the command prompt line type the following commands and run the analyses: 
+
+
+> data(dtsimp)
+
+> head(dtsimp[1:3, ])
+
+*Correlation between variables:*
+
+> corr(dtsimp, verbose = FALSE)
+
+*Simple linear regression between Y and X1-X3 vars:*
+
+> reg(dtsimp, 1, verbose = FALSE)
+
+*Plot the path main diagram*
+
+> matdiag(dtsimp, 1)
+
+```{r Prepare and show the dtsimp data and perform the 1st path diagram, echo = FALSE, fig.height=4, fig.width=5}
+
+data(dtsimp)
+corr(dtsimp, verbose = FALSE)
+reg(dtsimp, 1, verbose = FALSE)
+matdiag(dtsimp, 1)
+```
+Fig. 3: Diagram of the path coefficient analysis of 'dtsimp' sample dataset. 
+
+
+**> Note: when user faces with an external data**:
+Suppose we have data stored in a hard drive at the path `Path/to/data` in a file called `mydata.xls`. To perform the following steps in RStudio console, follow these instructions:
+
+> library(readxl), if installed the `readxl` package.
+
+> dtraw <- read_excel("Path/to/data/mydata.xls").
+
+### 2-1-2- worked example 2:
+The next dataset, called `dtraw` is used in this part. It is also a built-in data in ** and contains nine variables: one dependent variable called `Y` and eight independent variables labeled `X1` through `X8`. This dataset belongs to a population of a Camelina oil crop in its seed oil (Y) and C18, C18.1, C18.2, C18.3, C20.0, C20.1, C20.2, C22.1 fatty acids (marked as X1-X8) were measured. Then type the following commands in the RStudio console and run them:
+
+> data(dtraw)
+  
+> rownames(dtraw) <- dtraw[, 1]
+  
+> dtraw[, 1] <- NULL
+  
+> head(dtraw[1:4, ])
+
+The output is as follows:
+```{r Prepare and Showe the dtraw dataset, message=FALSE, warning=FALSE}
+data(dtraw)
+dtraw <- as.data.frame(dtraw)
+rownames(dtraw) <- dtraw[, 1]
+dtraw[, 1] <- NULL
+head(dtraw[1:4, ])
+```
+
+This dataset can be analyzed via ** packages as follows using 'corr_plot' function of 'metan' package, thanks to [@OlivotoL2020]. 
+
+Running 'cor_plot' function for 'dtsimp':   
+
+``` {r Correlogram of dtraw dataset, excluding the first column on the left}
+data(dtsimp)
+cor_plot(dtsimp)
+``` 
+
+Fig. 4: Correlogram of dtsimp dataset, a built-in sample data.
+
+
+Running the 'matdiag' function for 'dtraw' dataset ignoring the first column from left, or column names:  
+
+```{r, include=FALSE}
+
+old.par <- par(no.readonly = TRUE)
+on.exit(par(old.par))
+par(mar=rep(1, 4))
+knitr::opts_chunk$set(par(mar=rep(2, 4)))
+
+```
+
+```{r Perform the  path diagram, echo = FALSE, fig.height=4, fig.width=5}
+
+old.par <- par(no.readonly = TRUE)
+on.exit(par(old.par))
+par(mar=rep(1, 4))
+matdiag(dtraw, 1)
+
+```
+Fig. 5: Diagram of the path coefficient analysis of dtraw 
+
+The most significant part of my ** package is fitting such diagram, which is produced with the assistance of the *DiagrammeR* package. 
+
+> It is important to exercise caution when encountering a short Plot Window in RStudio. To resolve this issue, navigate to R-Studio and position the cursor at the top of the graph window until four-way arrows appear. Then, effortlessly drag the top of the plot region upwards towards the variable list. If the figure region problem originated from this, running the code without any modifications will generate the anticipated graph. Additionally, ensure that your outer default margins are correctly sized and that your R plot area labels are not truncated.
+https://www.programmingr.com/r-error-messages/r-figure-margins-too-large/
+
+*When response existed between dependents, but not the first from left:*
+```{r response is between independents} 
+data(heart)
+desc(heart, 2)
+# matdiag(heart, 2)
+```
+
+
+*Please be cautious that the diagram is only produced automatically when there is only one dependent variable and related independent variable (causative). In the data set, the dependent variable (Y) should be the first variable from the left, and the other variables should be ordered from left to right, as observed in `dtsimp` or `dtraw`. In other words, when the target is simple path coefficient analysis, you can call the packages via: **matdiag(dtsimp, 1). The package extracts textual outputs (without graphs) under any conditions, even when there is missing data.*
+
+
+## 2-2- Sequential path coefficient analysis
+### 2-2-1- worked example:
+As mentioned earlier, there are two types of path diagrams or methodologies: simple and multivariate. The multivariate form requires more steps and work, but the relationships between variables are the same and easy to understand. In the case of a sequential path diagram, this methodology is more complex because it includes intervening variables that need to be accounted for. Let's consider a specific scenario with a dataset. For more information see [@arminian2008]. Regarding the dataset, let's assume our data is stored in a hard drive with the path "~path_to_data/" and is named 'dtseq.xls'. To load this dataset into the Rstudio console, follow these steps:
+
+
+*library(readxl)  #following installing the `readxl` package*
+
+> dtseq <- read_excel("~path_to_data/dtseq.xls")  
+
+
+Methods like 'Pearson' or 'Spearman' can be used to analyze the correlation between variables. A correlogram is a tool that combines scatterplots and histograms, making it possible to examine the relationship between each pair of numeric variables in a matrix. The correlation is visually depicted in scatterplots, while the diagonal of the correlogram showcases the distribution of each variable using a histogram or density plot. (Source: https://python-graph-gallery.com/correlogram/) This analysis can be presented in the form of tables or matrices, which can be generated using the 'PerformanceAnalytics' and 'metan' packages.
+
+*step 1: YLD v.s FS, DFT, FW, FV:*
+
+*library(metan)*
+
+*data(dtseq)*
+
+*dtseq1 <- dtseq[, c(2, 4, 3, 6, 5)]* 
+
+*head(dtseq1)*
+
+*matdiag(dtseq1, 1)*
+
+```{r Corrplot diagram of dtseq1 data, echo = FALSE, fig.height=4, fig.width=5}
+# YLD v.s FS, DFT, FW, FV
+data(dtseq)
+dtseq1 <- dtseq[, c(2, 4, 3, 6, 5)]  
+head(dtseq1)
+matdiag(dtseq1, 1)
+```
+ 
+Fig. 6: Diagram of dtseq1, modified of the dtseq data.
+
+
+Network diagrams, also known as graphs, visually depict the connections between a group of entities. Each entity is represented as a node or vertice, and the connections between nodes are shown as links or edges (source: https://www.data-to-viz.com/graph/network.html). In R software, you can create network plots or connections between objects using the 'corrr' package. This package allows you to create colored links that can be thin or thick, depending on the strength of the correlation, to represent the correlations between objects. Take a look at the graph that illustrates the correlations for 'dtseq1'. It showcases a larger number of variables, making it visually appealing and informative.
+
+
+```{r Network plot of the dtseq1 data, echo = FALSE, fig.height=4, fig.width=5}
+network.plot(dtraw2)
+```
+ 
+Fig. 7: Network plot of the dtraw2.  
+
+
+```{r A Heatmap plot of the dtraw data, echo = FALSE, fig.height=4, fig.width=5}
+
+ data(dtraw2)
+ heat_map(dtraw2)
+```
+ 
+ Fig. 8: Heatmap of the dtraw2 dataset.  
+ 
+ 
+## Attractive heatmaps 
+For plotting the heatmaps and clustering of observations and variables simultaneously, we can use some packages developed such as `ComplexHeatmap`<10.1002/imt2.43> (Gu Z (2022). “Complex Heatmap Visualization.” iMeta. doi:10.1002/imt2.43.), and `pheatmap` packages. We here introduce the application of `ComplexHeatmap` package in clustering the `dtraw2` dataset measured on 35 genotypes of a plant with 9 traits.
+
+
+```{r, echo = FALSE}
+
+old.par <- par(no.readonly = TRUE)
+on.exit(par(old.par))
+par(mar=rep(1, 4))
+
+data(dtraw2)
+dtraw2 <- scale(as.data.frame(dtraw2))
+dtraw2 <- as.matrix(dtraw2)
+
+# Define some graphics to display the distribution of columns
+.hist = anno_histogram(dtraw2, gp = gpar(fill = "lightblue"))
+
+.density = anno_density(dtraw2, type = "line", gp = gpar(col = "blue"))
+
+ha_mix_top = HeatmapAnnotation(
+  hist = .hist, density = .density,
+  height = unit(3.8, "cm")
+)
+# Define some graphics to display the distribution of ows
+.violin = anno_density(dtraw2, type = "violin", 
+ gp = gpar(fill = "lightblue"), which = "row")
+
+.boxplot = anno_boxplot(dtraw2, which = "row")
+
+ha_mix_right = HeatmapAnnotation(violin = .violin, bxplt = .boxplot,
+ which = "row", width = unit(4, "cm"))
+
+# Combine annotation with heatmap
+
+Heatmap(dtraw2, name = "dtraw2", 
+        column_names_gp = gpar(fontsize = 8),
+        top_annotation = ha_mix_top) + ha_mix_right
+
+```
+
+ Fig. 9: Complex heatmap plot1 of the dtraw2. 
+
+*Step 2: FS vs. FLP, DFL:*
+```{r Prepare and show the dtseq2 data and perform the  path diagram, echo = FALSE, fig.height=4, fig.width=5}
+dtseq2 <- dtseq[, c(4, 8, 7)]  
+head(dtseq2)
+matdiag(dtseq2, 1)
+```
+
+Fig. 10: Diagram of the path coefficient analysis of the dtseq2 (part of dtseq)  
+
+
+*Step 3: DFT vs. FLP, DFL:*
+```{r Prepare and show the dtseq3 data and perform the path diagram, echo = FALSE, fig.height=4, fig.width=5}
+dtseq3 <- dtseq[, c(3, 8, 7)]   
+head(dtseq3)
+matdiag(dtseq3, 1)
+```
+Fig. 11: Diagram of the path coefficient analysis of dtseq3 (part of dtseq)  
+
+
+*Step 4: FW vs. FLP, DFL:*
+```{r Prepare and show the dtseq4 data and perform the  path diagram, echo = FALSE, fig.height=4, fig.width=5}
+dtseq4 <- dtseq[, c(6, 8, 7)]  
+head(dtseq4)
+matdiag(dtseq4, 1)
+```
+Fig. 12: Diagram of the path coefficient analysis of dtseq4 (part of dtseq)  
+
+
+*Step 5: FV vs. FLP, DFL:*
+```{r corrplot of the dtseq5 data, echo = FALSE, fig.height=4, fig.width=5}
+dtseq5 <- dtseq[, c(5, 8, 7)]  
+head(dtseq5)
+matdiag(dtseq5, 1)
+```
+ 
+Fig. 13: Correlation plot of the dtseq5 (part of dtseq)  
+
+
+*Step 6: DFL vs. FLP:*
+```{r Network plot of the dtseq6 data, echo = FALSE, fig.height=4, fig.width=5}
+dtseq6 <- dtseq[, c(7, 8)]  
+head(dtseq6)
+matdiag(dtseq6, 1)
+```
+Fig. 14: Network plot of the dtseq6 (part of dtseq).  
+
+
+Multivariate analysis of variance (MANOVA) to estimate SSCP matrices and so on. This requires the following package to be installed:
+
+```{r }
+data(dtseqr)
+dtseqr <- as.data.frame(dtseqr)
+dtseqr[, 1] <- as.factor(dtseqr[, 1])  # Rep
+dtseqr[, 2] <- as.factor(dtseqr[, 2])  # Genotypes
+
+f <- lm(cbind(YLD, DFT, FS, FV, FW, DFL, FLP) ~ Rep + Genotypes, dtseqr)
+
+summary(Anova(f))  # all results for MANOVA
+
+# Anova(f)$SSPE    # individual printing SSCP matrix of error
+
+Anova(f)$SSPE[4:5, 4:5] # SSCP matrix of error for two dependent variables i.e Fv and FW.
+```
+
+Following performing multivariate path coefficient analysis, it is necessary to estimate the correlation coefficient between residuals ( here FV and FW are final dependent variables) as follow. To do this, the Error matrix needs to be calculated in MANOVA.
+
+```{r}
+ru1u2 <- Anova(f)$SSPE[4, 5]/(  sqrt(Anova(f)$SSPE[4, 4])*sqrt(Anova(f)$SSPE[5, 5]))
+cat("\nCorrelation coefficient between residuals is:\n", ru1u2)
+```
+
+After performing or analyzing sequential path analyses step-by-step, it is now time to create a sequential path diagram, which includes a multivariate path diagram. To do this, one can use the program called *Graphviz* in relation to *DiarammeR*. If a specific section of the sequential model is considered as a multivariate path, one can draw a multivariate path Diagram [@arminian2008] and estimate the correlation coefficient between residuals (as previously estimated) as follows:
+
+```{r, echo = FALSE}
+
+grViz("
+      digraph SEM {
+      
+graph [layout = dot,
+overlap = true,
+outputorder = edgesfirst]
+node [shape = rectangle]
+      
+a [pos = '0, 0!', label = 'FLP', shape = ellipse, style = filled, color = orange]
+b [pos = '0, 1!', label = 'DFL', shape = ellipse, style = filled, color = orange]
+c [pos = '3, 1!', label = 'DFT', shape = ellipse, style = filled, color = green]
+d [pos = '3, 2!', label = 'FS', shape = ellipse, style = filled, color = green]
+e [pos = '3, -1!', label = 'FV', shape = ellipse, style = filled, color = green]
+f [pos = '3, -2!', label = 'FW', shape = ellipse, style = filled, color = green]
+g [pos = '5, 0!', label = 'YLD', shape = rectangle, style = filled, color = cyan]
+h [pos = '6.5, 0!', label = 'Residual', shape = plaintext]
+
+a->b [label = '0.36ns', color=red, penwidth = 4]   
+a->c [label = '-0.11ns', color=blue, penwidth = 2]
+a->d [label = '-0.12ns', color=blue, penwidth = 2]
+a->e [label = '0.19ns', color=blue, penwidth = 3]
+a->f [label = '0.37ns', color=blue, penwidth = 4]
+
+b->c [label = '0.35ns', color=red, penwidth = 4]
+b->d [label = '0.49ns', color=red, penwidth = 4.5]
+b->e [label = '0.04ns', color=red, penwidth = 1]
+b->f [label = '0.19ns', color=red, penwidth = 2]
+
+c->g [label = '0.21ns', color=black, penwidth = 3]
+d->g [label = '-0.39ns', color=black, penwidth = 4]
+e->g [label = '0.37ns', color=black, penwidth = 4]
+f->g [label = '0.08ns', color=black, penwidth = 1]
+
+h->g [label = '0.77', color=blueviolet, penwidth = 5] # residual effect
+      }
+      ")
+```
+Fig. 15: Sequential univariate path diagram. It is important to note that residuals can be added to each endogenous variable, which are estimated throughout steps 1 to 6 above.
+ 
+  
+For full color names or other signs of DiagrammeR or lots of node/nodge attributes, and Graphviz go to be used in the diagrams see the manuals and guides like: https://rich-iannone.github.io/DiagrammeR/articles/graphviz-mermaid.html. Also: vignettes/graphviz-mermaid.Rmd
+  
+```{r, echo = FALSE}
+
+grViz("
+      digraph SEM {
+      
+graph [layout = dot,
+overlap = true,
+outputorder = edgesfirst]
+      
+node [shape = rectangle]
+      
+ a [pos = '0, 0!', label = 'X1', shape = ellipse, style = filled, color = orange]
+ b [pos = '0, 1!', label = 'X2', shape = ellipse, style = filled, color = orange]
+
+ e [pos = '1, 0!', label = 'Y2', shape = rectangle, style = filled, color = green]
+ f [pos = '1, 1!', label = 'Y1', shape = rectangle, style = filled, color = green]
+ i [pos = '2, 0!', label = 'Residual1', shape = plaintext]
+ j [pos = '2, 1!', label = 'Residual2', shape = plaintext]
+
+a -> b [label = '0.36ns', color=blue, penwidth = 3.0, dir=both]
+a -> e [label = '0.19ns', color=blue, penwidth = 1.0]
+a -> f [label = '0.37ns', color=blue, penwidth = 4.0]
+
+b -> e [label = '0.04ns', color=red, penwidth = 1.0]
+b -> f [label = '0.19ns', color=red, penwidth = 2.0]
+
+i -> e [label = '0.98', color=blueviolet, penwidth = 4.5] # residual effect
+j -> f [label = '0.91', color=blueviolet, penwidth = 4.0] # residual effect
+
+i -> j [label = '0.26', color=black, penwidth = 3.0, dir=both]
+  }
+      ")
+``` 
+Fig. 16: The sequential multivariate path Diagram  
+
+Notice: Users can see the 'lavaan' package in R and simple 'PATHSAS' code written by Cramer et al. [@Cramer1999], and also and "semPlot" function of 'OpenMxas' package as initial tools for conducting path analyses and SEM (Structural Equation Modeling). 
+
+# References
